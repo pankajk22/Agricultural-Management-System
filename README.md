@@ -1,1 +1,1 @@
-# Agricultural-Management-System
+# Agricultural Management System
