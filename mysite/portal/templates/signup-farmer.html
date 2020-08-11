@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>SignUp-Farmer</title>
+  </head>
+  <body>
+        
+    <h1 style="text-align: center; margin-top: 2cm;">SignUp-Farmer</h1>
+    <div class="card w-50" style="margin-left: 30%; border: none;">
+        <form>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" placeholder="Name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email address:</label>
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+              <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact Number:</label>
+                <input type="text" class="form-control" id="contact" placeholder="Contact Number">
+            </div>
+            <div class="card" style="border: none;">
+                <h2>Address</h2>
+                <div class="form-group">
+                    <label for="addressline1">Address Line 1:</label>
+                    <input type="text" class="form-control" id="addressline1" placeholder="House Number,Apartment, suite , unit, building, floor, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="addresscity">City:</label>
+                    <input type="text" class="form-control" id="addresscity" placeholder="City/Town/District">
+                </div>
+                <div class="form-group">
+                    <label for="addressstate">State/UT:</label>
+                    <input type="text" class="form-control" id="addressstate" placeholder="State/UT">
+                </div>
+                <div class="form-group">
+                    <label for="addresszipcode">Pin-Code:</label>
+                    <input type="text" class="form-control" id="addresszipcode" placeholder="PinCode/ZipCode">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_proof_type">ID-Proof Type</label>
+                <select class="form-control" id="id_proof_type" required>
+                  <option value="">Select your ID-Proof Type</option>
+                  <option value="adhaarcard">Adhaar-Card</option>
+                  <option value="votercard">Voter ID-Card</option>
+                  <option value="passport">Passport</option>
+                  <option value="pancard">PAN Card</option>
+                  <option value="drivinglicence">Driving Licence</option>
+                  <option value="others">Others</option>
+                </select >
+                <!-- <input type="text" class="form-control" id="class"> -->
+              </div>
+            <div class="form-group">
+                <label for="idnumber">ID-Proof Number</label>
+                <input type="text" class="form-control" id="idnumber" placeholder="ID Number">
+            </div>
+
+            <button type="submit" id="signupsubmit"class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        
+        var signUpUser={};
+        
+
+
+        var submitBtn = document.getElementById('signupsubmit')
+
+        submitBtn.addEventListener('click', function (e) {
+          e.preventDefault()
+            var name=document.getElementById('name').value;
+            var email=document.getElementById('email').value;
+            // var pass=document.getElementById('password').value;
+            var contact=document.getElementById('contact').value;
+            var addressline1=document.getElementById('addressline1').value;
+            var addresscity=document.getElementById('addresscity').value;
+            var addressstate=document.getElementById('addressstate').value;
+            var addresszipcode=document.getElementById('addresszipcode').value;
+            var id_type=document.getElementById('id_proof_type').value;
+            var id_number=document.getElementById('idnumber').value;
+
+            console.log(id_type);
+
+            signUpUser['Name']=name;
+            signUpUser['Email']=email;
+            // user['Password']=pass;
+            signUpUser['Contact']=contact;
+            signUpUser['Address_line1']=addressline1;
+            signUpUser['Address_city']=addresscity;
+            signUpUser['Address_state']=addressstate;
+            signUpUser['Address_zipcode']=addresszipcode;
+            signUpUser['id_type']=id_type;
+            signUpUser['id_number']=id_number;
+            signUpUser['Type']="farmer";
+
+            window.location.href = "{% url 'signUp' %}"+"?signUpUser="+JSON.stringify(signUpUser);
+
+            //console.log(user['Name']);
+        });
+
+        
+            
+        
+
+
+        
+
+    </script>
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>

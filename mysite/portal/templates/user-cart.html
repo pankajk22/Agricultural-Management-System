@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+    <style>
+        .dropdown:hover .dropdown-menu {
+        display: block;
+        margin-top: 0; 
+    }
+    .carousel-item{
+        height: 500px;
+    } 
+    .carousel-item img{
+        height: 100%;
+        width: 100%;
+        
+    }
+    .button5 {
+        border-radius: 75%;
+        background-color: grey;
+        text-align: center;
+        color: white;
+    }
+    </style> 
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>Cart</title>
+  </head>
+  <body>
+        
+      <!-- Navigation Bar for User -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">   
+    <a class="navbar-brand" href="#">AGROMARKET</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Buy
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Fruits</a>
+                    <a class="dropdown-item" href="#">Crops</a>
+                    <a class="dropdown-item" href="#">Vegetables</a>
+                    <!-- <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a> -->
+                </div>
+                </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Cart</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Deals</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Liked Items</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Notifications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact Us</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="logout" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    My Account
+                </a>
+                <div class="dropdown-menu" aria-labelledby="logout">
+                    <a class="dropdown-item" href="#">Settings</a>
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <!-- <a class="dropdown-item" href="#">Vegetables</a> -->
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Logout</a>
+                </div>
+                </li>
+        </ul>
+    </div>
+</nav>
+
+
+
+
+
+
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="home-user.html">Home</a></li>
+    <li class="breadcrumb-item"><a href="#">Farmer's Profile</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Cart</li>
+</ol>
+</nav>
+
+
+
+
+    <div class="container" >
+        <h1 style="text-align: center;">YOUR CART</h1>
+        <div class="row" style="align-items: center;">
+            <div class="col" id="total_items" style="text-align: center;">
+                
+            </div>
+            <div class="col"  style="text-align: center;">
+                <button type="submit" id="del_items" onclick="deletecart()" class="btn btn-primary">Delete Cart</button>
+            </div>
+        </div>
+    
+        <div class="container-fluid col-md-9" id="cart_crops">
+                
+            
+        
+
+        </div>
+
+        <svg height="110">
+            <rect  height="100" style="fill:white;" />
+          </svg> 
+        <button style="margin-left: 85px;" type="submit" id="save_items" class="btn btn-primary">Save Cart </button>
+
+        
+    </div>
+   
+    
+
+    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+
+    <script>
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function sub1kg(i){
+            var td1="tdquant_"+i;
+            var td2="tdprice_"+i;
+            cart[i].Quantity--;
+
+            if (cart[i].Quantity<0) {
+                alert("quantity can't be -ve...")
+                cart[i].Quantity++
+            }
+
+            grandtotal=grandtotal-(cart[i].Crop_price*1);
+            var totalcost=cart[i].Quantity*cart[i].Crop_price;
+            document.getElementById(td1).innerHTML='<td id="tdquant_'+i+'"><button class="button button5" onclick="sub1kg('+i+')"><i class="fa fa-minus"></i></button>'+cart[i].Quantity+'<button class="button button5" onclick="add1kg('+i+')"><i class="fa fa-plus"></i></button></td>';
+            document.getElementById(td2).innerHTML='<td id="tdprice_'+i+'">&#x20b9;'+ totalcost+'</td>';
+            document.getElementById("grdtotal").innerHTML='GRAND TOTAL : &#x20b9;'+grandtotal;
+
+        }
+
+        function add1kg(i){
+            var td1="tdquant_"+i;
+            var td2="tdprice_"+i;
+            cart[i].Quantity++;
+            
+            if (cart[i].Quantity>cart[i].max_quantity_available){
+                alert("can't add further, this is the max qty...")
+                cart[i].Quantity--;
+            }
+
+            grandtotal=grandtotal+(cart[i].Crop_price*1);
+            var totalcost=cart[i].Quantity*cart[i].Crop_price;
+            document.getElementById(td1).innerHTML='<td id="tdquant_'+i+'"><button class="button button5" onclick="sub1kg('+i+')"><i class="fa fa-minus"></i></button>'+cart[i].Quantity+'<button class="button button5" onclick="add1kg('+i+')"><i class="fa fa-plus"></i></button></td>';
+            document.getElementById(td2).innerHTML='<td id="tdprice_'+i+'">&#x20b9;'+ totalcost+'</td>';
+            document.getElementById("grdtotal").innerHTML='GRAND TOTAL : &#x20b9;'+grandtotal;
+
+        }
+        
+        var cart={{cartList|safe}}
+        
+        /*[{'crop_id':'001','crop_name':'Apple','crop_type':'Fruits','farmer_name':'Ram Singh','Quantity':'20','Crop_price':'100','max_quantity_available':'100'},
+        {'crop_id':'002','crop_name':'Mango','crop_type':'Fruits','farmer_name':'Lal Singh','Quantity':'40','Crop_price':'400','max_quantity_available':50}]*/
+
+        
+        var grandtotal=0;
+        cartbuild();
+        
+        function cartbuild()
+        {   
+            var numofitems=cart.length;
+            document.getElementById("total_items").innerHTML='<h3>TOTAL ITEMS IN THE CART: '+numofitems+'';
+            if(numofitems>0)
+            {
+                var tabletoappend='<table class="table table-striped" style="margin-left:auto;margin-right:auto;">'+
+                                    '<thead >'+
+                                    '<tr>'+
+                                        '<th scope="col">CROP-ID</th>'+
+                                        '<th scope="col">CROP-NAME</th>'+
+                                    ' <th scope="col">FARMERNAME</th>'+
+                                        '<th scope="col">QUANTITY(KG\'s)</th>'+
+                                        '<th scope="col">MAX QUANTITY AVAILABLE(KG\'s)</th>'+
+                                        '<th scope="col">CROP PRICE-PER-KG</th>'+
+                                        '<th scope="col">TOTAL COST</th>'+
+                                ' </tr>'+
+                                    '</thead>'+
+                                    '<tbody id="addcropsinrows">';
+                                    
+                
+                for(i=0;i<numofitems;i++)
+                {
+                    var totalcost=cart[i].Quantity*cart[i].Crop_price;
+                    grandtotal=grandtotal+totalcost
+                    tabletoappend=tabletoappend+'<tr>'+
+                                '<th scope="row">'+cart[i].crop_id+'</th>'+
+                                '<td>'+cart[i].crop_name+'</td>'+
+                                '<td>'+cart[i].farmer_name+'</td>'+
+                                '<td id="tdquant_'+i+'"><button class="button button5" onclick="sub1kg('+i+')"><i class="fa fa-minus"></i></button>'+cart[i].Quantity+'<button class="button button5" onclick="add1kg('+i+')"><i class="fa fa-plus"></i></button></td>'+
+                                '<td>'+cart[i].max_quantity_available+'</td>'+
+                                '<td>&#x20b9;'+cart[i].Crop_price+'</td>'+
+                                '<td id="tdprice_'+i+'">&#x20b9;'+ totalcost+'</td>'+
+                                
+                                '</tr>';
+                }
+
+                tabletoappend=tabletoappend+'</tbody>'+
+                                '</table>'+
+                                '<div class="row" style="align-items: center;">'+
+                '<div class ="col" style="text-align: center;"><h3 id="grdtotal">GRAND TOTAL : &#x20b9;'+grandtotal+' </h3><div>'+
+                '<div class ="col" style="text-align: center;"><button type="submit"  class="btn btn-primary">MAKE DEAL</button><div>'+
+                '</div>';
+
+                document.getElementById("cart_crops").innerHTML=tabletoappend;
+                
+
+
+                
+            }
+            else{
+
+                var texttoappend='<div class="row" style="align-items: center;">'+
+                '<div class ="col" style="text-align: center;"><h3>NO ITEMS FOUND!!! LETS BUY SOMETHING</h3><div>'+
+                '<div class ="col" style="text-align: center;"><form action="home-user.html"><button type="submit" class="btn btn-primary">BUY NOW</button></form><div>'+
+                '</div>';
+
+                document.getElementById("cart_crops").innerHTML=texttoappend;
+                    
+            }
+        };
+
+
+        function deletecart()
+        {
+            for (var i=0; i<cart.length; i++)
+                cart[i].Quantity = 0
+            
+            updateCart()
+          
+            /*while(cart.length>0)
+                {
+                    console.log("Popping one item from cart");
+                    cart.pop();
+                    console.log("Total Items Left:"+cart.length);
+
+                }
+
+            cartbuild();*/
+            
+        };
+
+
+        var saveCartBtn = document.getElementById('save_items')
+
+        saveCartBtn.addEventListener('click', function(e) {
+            e.preventDefault()
+            
+            updateCart()
+        })
+
+        function updateCart(){
+            
+            var url = '/updateCart/'
+                    
+            fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': csrftoken
+
+                },
+                body: JSON.stringify({'cart':cart})
+            })
+
+            .then((response) => {
+                return response.json()
+            })
+            
+            .then((data) => {
+                console.log('successfull', data);
+                alert('Cart Updated Successfully');
+
+                location.reload()
+            })
+        }
+
+
+       
+    </script>
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
