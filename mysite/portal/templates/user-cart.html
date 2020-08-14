@@ -19,6 +19,27 @@
         text-align: center;
         color: white;
     }
+
+        .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
     </style> 
   <head>
     <!-- Required meta tags -->
@@ -243,8 +264,8 @@
                                 '</table>'+
                                 '<div class="row" style="align-items: center;">'+
                 '<div class ="col" style="text-align: center;"><h3 id="grdtotal">GRAND TOTAL : &#x20b9;'+grandtotal+' </h3><div>'+
-                '<div class ="col" style="text-align: center;"><button type="submit"  class="btn btn-primary">MAKE DEAL</button><div>'+
-                '</div>';
+                '<div class ="col" style="text-align: center;"><button type="submit"  class="btn btn-primary" id="make-deal-btn">MAKE DEAL</button><div>'+
+                '</div>'+'<div id="loader" class="loader hidden">Checking Out</div>';
 
                 document.getElementById("cart_crops").innerHTML=tabletoappend;
                 
@@ -319,8 +340,44 @@
             })
         }
 
+        var makeDealBtn = document.getElementById('make-deal-btn')
 
+        makeDealBtn.addEventListener('click', function(e){
+            e.preventDefault()
+            
+            makeDealBtn.classList.add('hidden')
+            document.getElementById('loader').classList.remove('hidden')
+
+            makeDeal()
+        })
+
+        function makeDeal() {
+            var url = '/makeDeal/'
+
+            fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': csrftoken
+
+                },
+                body: JSON.stringify({'cart': cart})
+            })
+
+            .then((response) => {
+                return response.json()
+            })
+            
+            .then((data) => {
+                console.log('successfull', data);
+                alert('Purchase Successful');
+
+                location.reload()
+            })
+        }
        
+        
+
     </script>
 
 

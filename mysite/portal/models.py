@@ -48,7 +48,7 @@ class farmer(models.Model):
         for crop in allCrops:
             if crop.cropType not in allCropType:
                 allCropType.append(crop.cropType)
-        print("#################",allCropType)
+        #print("#################",allCropType)
         return allCropType
 
     @property

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+    
+<style>
+    .dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0; 
+}
+.carousel-item{
+    height: 500px;
+} 
+.carousel-item img{
+    height: 100%;
+    width: 100%;
+    
+}
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  /* background-color: yellow; */
+  /* padding: 50px; */
+  font-size: 20px;
+  z-index:10;
+  background:inherit;
+
+
+  
+}
+</style>
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<title>Home-Farmer</title>
+</head>
+<body>
+    
+<!-- Navigation Bar for Farmer -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">   
+    <a class="navbar-brand" href="#">AGROMARKET</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#">Notifications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact Us</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="logout" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    My Account
+                </a>
+                <div class="dropdown-menu" aria-labelledby="logout">
+                    <a class="dropdown-item" href="#">Settings</a>
+                    <a class="dropdown-item" href="farmerprofile.html">Profile</a>
+                    <!-- <a class="dropdown-item" href="#">Vegetables</a> -->
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Logout</a>
+                </div>
+                </li>
+        </ul>
+    </div>
+</nav>
+<!-- Breadcrumb for farmer -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <!-- <li class="breadcrumb-item"><a href="home-user.html">Home</a></li> -->
+      <!-- <li class="breadcrumb-item"><a href="#">Library</a></li> -->
+      <li class="breadcrumb-item active" aria-current="page">Farmer-Home</li>
+    </ol>
+  </nav>
+
+<div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel" style="background-color: rgb(226, 208, 40); padding: 5%;">
+    <div class="carousel-inner">
+        <div class="carousel-item active " data-interval="5000">
+        <img src="https://i.pinimg.com/originals/78/e1/b1/78e1b1e584c54ac012e1ab82168007a5.jpg" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+            <h5>High Quality Crops</h5>
+            <p>Let's Connect</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-interval="5000">
+        <img src="https://i.pinimg.com/originals/d6/79/23/d67923fd3a82b56925cc6162c80ca3cd.jpg" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+            <h5>Fresh Vegetables</h5>
+            <p>Let's Connect</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-interval="5000">
+        <img src="https://images6.alphacoders.com/368/368872.jpg" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+            <h5>Fresh Fruits</h5>
+            <p>Let's Connect</p>
+          </div>
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+<div class="sticky">
+    <div class="container-fluid col-md-9" > 
+        <h1 style="text-align: center;">CROPS AVAILABLE IN YOUR PROFILE</h1>
+        <button style="background-color: blueviolet;" type="button" onclick="window.location.href='http://127.0.0.1:8000/addCropPage'"  class="btn btn-primary btn-lg btn-block"><i class="fa fa-plus"></i> ADD CROP IN YOUR PROFILE <i class="fa fa-plus"></i></button>
+        
+    </div>
+</div>
+<div class="container-fluid col-md-9" id="available_crops">
+    
+    <table class="table table-striped">
+        <thead  class="thead-dark">
+          <tr>
+            <th scope="col">CROP-NAME</th>
+            <th scope="col">CROP-TYPE</th>
+            <th scope="col">QUANTITY(KG's)</th>
+            <th scope="col">CROP PRICE-PER-KG</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="addcropsinrows">
+          
+        </tbody>
+      </table>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    var cropdetails={{crops|safe}}
+
+        var rowtoadd="";
+
+        for(i=0;i<cropdetails.length;i++)
+        {
+            rowtoadd=rowtoadd+'<tr>'+
+                            '<th scope="row">'+cropdetails[i].Crop_name+'</th>'+
+                            '<td>'+cropdetails[i].Crop_type+'</td>'+
+                            '<td>'+cropdetails[i].Quantity+'</td>'+
+                            '<td>'+cropdetails[i].Crop_price+'</td>'+
+                            '<td><form id='+cropdetails[i].cropId+'><input type=submit value="Edit Crop Details" style="width:100% height:100%"></form></td>'+
+                            '</tr>';
+        }
+        document.getElementById("addcropsinrows").innerHTML=rowtoadd;
+
+
+        for(i=0; i<cropdetails.length; i++) {
+
+            document.getElementById(cropdetails[i].cropId).addEventListener('submit', function(e){
+                e.preventDefault()
+                console.log(this.id)
+
+                window.location.href = "{% url 'editCropPage' %}"+"?cropId="+this.id
+            })
+        }
+    
+
+</script>
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>

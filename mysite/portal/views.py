@@ -5,27 +5,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 
 from . models import *  
+from . utils import *
 
 # Create your views here.
 import json
 import itertools
 
-'''
-#from web3.auto.infura import w3
-from web3 import Web3, HTTPProvider, IPCProvider, WebsocketProvider
-#print(w3.eth.blockNumber)
-#print(w3.isConnected())
 
-infura_url = "https://ropsten.infura.io/v3/105a8a2d75f5428789ffd84c8c9b2ba9"
-
-web3_ropsten = Web3(HTTPProvider(infura_url))
-
-print(web3_ropsten.isConnected())
-
-account="0xbAE6e58D470195BeE55b22872d76B342d0e6BF25"
-balance = web3_ropsten.eth.getBalance("0xbAE6e58D470195BeE55b22872d76B342d0e6BF25")
-print(f"Balance of account {account} : {balance}")
-'''
 
 
 def portal(request):
@@ -37,17 +23,27 @@ def portal(request):
         try:
             signUpStatus="wholesalerCompleted"
             wholesalerLoggedIn = wholesaler.objects.get(user=request.user)
-            
+            print("wholesalerLoggedIn")
 
         except:
             print("Not a wholesaler, check for farmer here")
-            try:
-                signUpStatus="farmerCompleted"
-                #check for farmer
-                farmerLoggedIn = farmer.objects.get(user=request.user)
-            except:
-                signUpStatus="notCompleted"
-                #new account... redirect to signup page
+            signUpStatus="farmerCompleted"
+            #check for farmer
+            farmerLoggedIn = farmer.objects.get(user=request.user)
+            queryCrops = farmerLoggedIn.getAllCrops
+            farmerCrops = []
+
+            for c in queryCrops:
+                farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit})
+
+
+
+            context = {'crops': farmerCrops}
+            print("farmerLoggedIn")
+            return render(request, 'home-farmer.html', context)
+        
+
+
                 
     allFarmers = farmer.objects.all()
     allFarmerList = []
@@ -56,9 +52,10 @@ def portal(request):
     for f in allFarmers:
         allFarmerList.append({'userId': f.id,'Name':f.name,'Email':f.email,'Contact':f.phoneNo,'Address_line1':f.address,'Address_city':f.city,'Address_state':f.state,'Address_zipcode':f.zipcode,'MajorSeller': f.majorCropType,'Ratings': f.getRating})
 
-    print(allFarmerList)
+    #print(allFarmerList)
     context = {'allFarmers': allFarmerList, "signUpStatus": signUpStatus}
 
+    print("home-user")
     return render(request, 'home-user.html', context)
 
 def userSignUpPage(request):
@@ -106,6 +103,18 @@ def signUp(request):
         
     return redirect("/")
 
+
+
+
+
+
+
+
+
+
+################################################### USER PAGES #####################################################
+
+
 def farmerPage(request):
 
     farmerId = request.GET['farmerId']
@@ -140,6 +149,9 @@ def userCartPage(request):
         for c in cart:
             cropSelected = crop.objects.get(id=c.crop_id)
             farmerOfCrop = cropSelected.farmer
+            if c.quantity > cropSelected.quantity:
+                c.quantity = cropSelected.quantity
+                
             cartList.append({'crop_id': c.crop_id, 'crop_name' :cropSelected.name,'crop_type': cropSelected.cropType, 'farmerId': farmerOfCrop.id, 'farmer_name': farmerOfCrop.name,'Quantity':c.quantity, 'max_quantity_available':cropSelected.quantity, 'Crop_price':cropSelected.cropPricePerUnit})
         
         context = {'cartList': cartList}
@@ -226,3 +238,112 @@ def updateCart(request):
     else:
 
         return JsonResponse("not updated", safe=False)
+
+
+
+def makeDeal(request):
+ 
+    cartData = json.loads(request.body)
+    print(cartData['cart'])
+
+    if request.user.is_authenticated:
+    
+        for c in cartData['cart']:
+            print(c)
+            signUpStatus="wholesalerCompleted"
+            wholesalerLoggedIn = wholesaler.objects.get(user=request.user)
+            cropSelected = crop.objects.get(id=c['crop_id'])
+            cropSelected.quantity=cropSelected.quantity-c['Quantity']
+            cropSelected.save()
+            dealMade = dealsMade.objects.create(buyer=wholesalerLoggedIn, crop=cropSelected)
+            dealMade.quantity = c['Quantity']
+            dealMade.save()
+
+        print("deals table updated")
+
+        cartTuples = cartItem.objects.all()
+        for cartTuple in cartTuples:
+            cartTuple.delete()
+
+        print("cart deleted completely")        
+
+        cartData['buyerId']=wholesalerLoggedIn.id
+
+        status = saveInBlockchain(json.dumps(cartData))
+        print(status)
+
+        return JsonResponse("deal completed", safe=False)
+
+    else:
+
+        return JsonResponse("error", safe=False)
+
+################################################### FARMER PAGES #####################################################
+
+def addCropPage(request):
+
+
+    return render(request,'addcrop-farmer.html')
+
+def addCrop(request):
+
+    cropDetails = json.loads(request.body)
+
+    print(cropDetails)
+    signUpStatus="notLoggedIn"
+        
+    if request.user.is_authenticated:
+        
+        try:
+            signUpStatus="wholesalerCompleted"
+            wholesalerLoggedIn = wholesaler.objects.get(user=request.user)
+            print("wholesalerLoggedIn")
+
+        except:
+            print("Not a wholesaler, check for farmer here")
+            signUpStatus="farmerCompleted"
+            #check for farmer
+            farmerLoggedIn = farmer.objects.get(user=request.user)
+
+            print("farmerLoggedIn")
+
+            context = {'farmerId': farmerLoggedIn.id}
+            
+            farmerCrop, created = crop.objects.get_or_create(farmer=farmerLoggedIn, name=cropDetails['Crop_Name'])
+
+            if created:
+                print("new crop...")
+            
+            else:
+                print("existing crop...")
+            
+            farmerCrop.cropType = cropDetails['Crop_Type']
+            farmerCrop.quantity = cropDetails['Quantity']
+            farmerCrop.cropPricePerUnit = cropDetails['Price_per_unit']
+            farmerCrop.description = cropDetails['Crop_Description']
+
+            print("....")
+            farmerCrop.save()
+
+            return JsonResponse("crop uploaded successfully...", safe=False)
+
+                                                                                                                                                                                                   
+
+    return JsonResponse("not logged in properly...", safe=False)
+
+
+
+def editCropPage(request):
+
+    cropId = request.GET['cropId']
+    print("crop ID editing: ", cropId)
+
+    cropSelected = crop.objects.get(id=cropId)
+
+    cropDetails = {'crop_id': cropId, 'Crop_Name': cropSelected.name, 'Crop_Type': cropSelected.cropType, 'Quantity': cropSelected.quantity, 'Price_per_unit': cropSelected.cropPricePerUnit, 'Crop_Description': cropSelected.description }
+
+    context = {'cropDetails': cropDetails}
+
+    return render(request, 'editcrop.html', context)
+
+
