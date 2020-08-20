@@ -1,3 +1,5 @@
+{% load static %}
+{% load socialaccount %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -35,6 +37,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript">
 
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
         
         var signUpUser={};
 
@@ -52,9 +71,32 @@
           signUpUser['Contact']=contact;
           signUpUser['Type']="buyer";
 
-          window.location.href = "{% url 'signUp' %}"+"?signUpUser="+JSON.stringify(signUpUser);
+          //window.location.href = "{% url 'signUp' %}"+"?signUpUser="+JSON.stringify(signUpUser);
+
+          var url='/signUp/'
 
 
+          fetch(url, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'X-CSRFToken': csrftoken
+
+                },
+                body: JSON.stringify(signUpUser)
+            })
+
+            .then((response) => {
+                return response.json()
+            })
+            
+            .then((data) => {
+                console.log('successfull', data);
+                alert(data);
+
+                window.location.href = "{% url 'portal' %}"
+                //  window.location.reload
+            })
           console.log("Hello World!!");
         });
 

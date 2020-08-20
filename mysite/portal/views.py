@@ -3,19 +3,40 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-
+from django.contrib.auth.models import User, auth
+from django.contrib.auth import logout
+from django.contrib import messages
 from . models import *  
 from . utils import *
-
+import logging
+import os
 # Create your views here.
 import json
 import itertools
 
+from datetime import date, datetime
+import time
+from pytz import timezone
+
+
+format = "%Y-%m-%d %H:%M:%S %Z%z"
+now_utc = datetime.now(timezone('UTC'))
+now_asia = now_utc.astimezone(timezone('Asia/Kolkata'))
+
+LOG_FORMAT="%(asctime)s %(levelname)s %(pathname)s.%(funcName)s(%(filename)s:%(lineno)d) -  %(message)s"
+logging.basicConfig(filename="logfile.txt",level=logging.DEBUG,format=LOG_FORMAT)
+logger = logging.getLogger()
 
 
 
-def portal(request):
+def portal(request):#homepage for everyone depending upon the type of user it is
+    
+    logger.info("HOMEPAGE")
+    logger.info("******************************************************************************")
 
+    logger.info("homePage")
+    
+    print("homePage")
     signUpStatus="notLoggedIn"
     #details of all the farmers..
     if request.user.is_authenticated:
@@ -26,22 +47,25 @@ def portal(request):
             print("wholesalerLoggedIn")
 
         except:
-            print("Not a wholesaler, check for farmer here")
-            signUpStatus="farmerCompleted"
-            #check for farmer
-            farmerLoggedIn = farmer.objects.get(user=request.user)
-            queryCrops = farmerLoggedIn.getAllCrops
-            farmerCrops = []
+            try:
+                print("Not a wholesaler, check for farmer here")
+                signUpStatus="farmerCompleted"
+                #check for farmer
+                farmerLoggedIn = farmer.objects.get(user=request.user)
+                queryCrops = farmerLoggedIn.getAllCrops
+                farmerCrops = []
 
-            for c in queryCrops:
-                farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit})
+                for c in queryCrops:
+                    farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit, 'Crop_Desc': c.description})
 
 
 
-            context = {'crops': farmerCrops}
-            print("farmerLoggedIn")
-            return render(request, 'home-farmer.html', context)
-        
+                context = {'crops': farmerCrops}
+                print("farmerLoggedIn")
+                return render(request, 'home-farmer.html', context)
+    
+            except:
+                signUpStatus="loggedInNotSignedUp"
 
 
                 
@@ -49,27 +73,28 @@ def portal(request):
     allFarmerList = []
 
 
-    for f in allFarmers:
-        allFarmerList.append({'userId': f.id,'Name':f.name,'Email':f.email,'Contact':f.phoneNo,'Address_line1':f.address,'Address_city':f.city,'Address_state':f.state,'Address_zipcode':f.zipcode,'MajorSeller': f.majorCropType,'Ratings': f.getRating})
+    if signUpStatus=="wholesalerCompleted":
+        for f in allFarmers:
+            allFarmerList.append({'userId': f.id,'Name':f.name,'Email':f.email,'Contact':f.phoneNo,'Address_line1':f.address,'Address_city':f.city,'Address_state':f.state,'Address_zipcode':f.zipcode,'MajorSeller': f.majorCropType,'Ratings': f.getRating})
 
     #print(allFarmerList)
     context = {'allFarmers': allFarmerList, "signUpStatus": signUpStatus}
 
-    print("home-user")
+    print(signUpStatus)
     return render(request, 'home-user.html', context)
 
-def userSignUpPage(request):
-
+def userSignUpPage(request):#rturns the user signup page
+    logger.info("*****************************************INSIDE USER SIGNUP PAGE***************************************")
     return render(request, 'signup-user.html')
 
 
-def farmerSignUpPage(request):
-
+def farmerSignUpPage(request):#returns the farmer signup page
+    logger.info("*****************************************INSIDE FARMER SIGNUP PAGE***************************************")
     return render(request, 'signup-farmer.html')
     
-def signUp(request):
+def signUp(request):#creates the user as requested, either farmer or wholesaler
 
-    SignUpDetails = json.loads(request.GET['signUpUser'])
+    SignUpDetails = json.loads(request.body)
     print(SignUpDetails)
 
 
@@ -101,7 +126,7 @@ def signUp(request):
     else:
         print("not logged in via google")
         
-    return redirect("/")
+    return JsonResponse("signup completed:", safe=False)
 
 
 
@@ -115,25 +140,75 @@ def signUp(request):
 ################################################### USER PAGES #####################################################
 
 
-def farmerPage(request):
+def farmerPage(request):#displays the details of a particular farmer to the buyer
 
+    logger.info("*****************************************FARMERS VISIBLE TO THE BUYERS***************************************")
+    
     farmerId = request.GET['farmerId']
-    print("farmer ID to fetch: ", farmerId)
+    signUpStatus="notLoggedIn"
+    #details of all the farmers..
+    if request.user.is_authenticated:
+        
+        try:
+            signUpStatus="wholesalerCompleted"
+            wholesalerLoggedIn = wholesaler.objects.get(user=request.user)
+            print(signUpStatus)
 
-    farmerSelected = farmer.objects.get(id=farmerId)
+        except:
+            try:
+                print("Not a wholesaler, check for farmer here")
+                signUpStatus="farmerCompleted"
+                #check for farmer
+                farmerLoggedIn = farmer.objects.get(user=request.user)
+                queryCrops = farmerLoggedIn.getAllCrops
+                farmerCrops = []
 
-    queryCrops = farmerSelected.getAllCrops
-    farmerCrops = []
+                for c in queryCrops:
+                    farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit})
 
-    for c in queryCrops:
-        farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit})
 
-    print(farmerCrops)
 
-    context = {'farmer':farmerSelected, 'crops': farmerCrops}
-    return render(request,'farmerpage.html',context)
+                context = {'crops': farmerCrops}
+                print("farmerLoggedIn")
+    
+            except:
+                signUpStatus="loggedInNotSignedUp"
 
-def userCartPage(request):
+    if signUpStatus=="wholesalerCompleted":        
+        logger.info('..........................................................................')
+        
+        logger.info("farmer ID to fetch: ", farmerId)
+
+        
+        print("farmer ID to fetch: ", farmerId)
+
+        farmerSelected = farmer.objects.get(id=farmerId)
+
+        queryCrops = farmerSelected.getAllCrops
+        farmerCrops = []
+
+        for c in queryCrops:
+            farmerCrops.append({'cropId':c.id, 'Crop_name':c.name,'Crop_type':c.cropType,'Quantity':c.quantity,'Crop_price':c.cropPricePerUnit})
+
+        print(farmerCrops)
+
+        context = {'farmer':farmerSelected, 'crops': farmerCrops}
+        return render(request,'farmerpage.html',context)
+
+    elif signUpStatus=="notLoggedIn":
+        logger.info('...........................................................................')
+        messages.info(request, 'Not Logged In')
+    
+    elif signUpStatus=="farmerCompleted":
+        logger.info('...........................................................................')
+        messages.info(request, 'This is buyer accounts feature, please signup as a buyer to use this feature')
+
+    elif signUpStatus=="loggedInNotSignedUp":
+        logger.info('...........................................................................')
+        messages.info(request, 'Complete your signup')
+        
+
+def userCartPage(request):#returns the cart details of the user
 
     signUpStatus="notLoggedIn"
     #details of all the farmers..
@@ -171,7 +246,7 @@ def userCartPage(request):
     return redirect("/")
 
 
-def addToCart(request):
+def addToCart(request):#add to cart functionality... triggered when a user clicks on add to cart button... it returns a JSON response of the status
 
     data = json.loads(request.body)
     cropId = data["cropId"]
@@ -210,7 +285,7 @@ def addToCart(request):
     else:
         return JsonResponse("not feasible", safe=False)
 
-def updateCart(request):
+def updateCart(request):#update cart functionality... triggered when a user clicks on save car button on their cart page.. it returns a JSON response of the status
 
     cartData = json.loads(request.body)
     print(cartData['cart'])
@@ -241,10 +316,11 @@ def updateCart(request):
 
 
 
-def makeDeal(request):
- 
+def makeDeal(request):#make deal functionality... triggered when a user clicks on make deal button, i.e. buys the crops from the farmer(s)... it returns a JSON response of the status
+#includes the functionality of saving the paper trail into the blockchain 
     cartData = json.loads(request.body)
     print(cartData['cart'])
+    paperTrail = []
 
     if request.user.is_authenticated:
     
@@ -259,6 +335,8 @@ def makeDeal(request):
             dealMade.quantity = c['Quantity']
             dealMade.save()
 
+            paperTrail.append({"date": str(date.today()),"time": str(datetime.now().time()), "dealId": dealMade.id, "cropId":cropSelected.id, "cropName": c['crop_name'], "cropType": c['crop_type'], "farmerName": c['farmer_name'], "buyerName":wholesalerLoggedIn.name,"quantity": c['Quantity'], "price": c['Crop_price']})
+
         print("deals table updated")
 
         cartTuples = cartItem.objects.all()
@@ -269,7 +347,7 @@ def makeDeal(request):
 
         cartData['buyerId']=wholesalerLoggedIn.id
 
-        status = saveInBlockchain(json.dumps(cartData))
+        status = saveInBlockchain(json.dumps(paperTrail))#function in utils.py file...
         print(status)
 
         return JsonResponse("deal completed", safe=False)
@@ -278,14 +356,15 @@ def makeDeal(request):
 
         return JsonResponse("error", safe=False)
 
+
+
 ################################################### FARMER PAGES #####################################################
 
-def addCropPage(request):
-
+def addCropPage(request):#returns the page to fill the add crop details
 
     return render(request,'addcrop-farmer.html')
 
-def addCrop(request):
+def addCrop(request):#add crop functionality
 
     cropDetails = json.loads(request.body)
 
@@ -309,18 +388,26 @@ def addCrop(request):
 
             context = {'farmerId': farmerLoggedIn.id}
             
-            farmerCrop, created = crop.objects.get_or_create(farmer=farmerLoggedIn, name=cropDetails['Crop_Name'])
+            if cropDetails['action']=="add":
+                print("adding the crop")
+                farmerCrop, created = crop.objects.get_or_create(farmer=farmerLoggedIn, name=cropDetails['Crop_Name'], description=cropDetails['Crop_Description'], cropPricePerUnit=cropDetails['Price_per_unit'], cropType=cropDetails['Crop_Type'])
+                
+                if created:
+                    farmerCrop.quantity=cropDetails['Quantity']
 
-            if created:
-                print("new crop...")
-            
-            else:
-                print("existing crop...")
-            
-            farmerCrop.cropType = cropDetails['Crop_Type']
-            farmerCrop.quantity = cropDetails['Quantity']
-            farmerCrop.cropPricePerUnit = cropDetails['Price_per_unit']
-            farmerCrop.description = cropDetails['Crop_Description']
+                else:
+                    farmerCrop.quantity = farmerCrop.quantity+int(cropDetails['Quantity'])
+                
+                farmerCrop.save()
+
+            elif cropDetails['action']=="edit":
+                print("editing the crop")
+                farmerCrop = crop.objects.get(farmer=farmerLoggedIn, id=cropDetails['cropId'])
+                
+                farmerCrop.cropType = cropDetails['Crop_Type']
+                farmerCrop.quantity = cropDetails['Quantity']
+                farmerCrop.cropPricePerUnit = cropDetails['Price_per_unit']
+                farmerCrop.description = cropDetails['Crop_Description']
 
             print("....")
             farmerCrop.save()
@@ -333,7 +420,7 @@ def addCrop(request):
 
 
 
-def editCropPage(request):
+def editCropPage(request):#returns edit crop page for the crop requested for the edit
 
     cropId = request.GET['cropId']
     print("crop ID editing: ", cropId)
@@ -347,3 +434,23 @@ def editCropPage(request):
     return render(request, 'editcrop.html', context)
 
 
+def logout(request):#just logout funcionality
+
+    auth.logout(request)
+    signUpStatus="notLoggedIn"
+    allFarmers = farmer.objects.all()
+    allFarmerList = []
+
+    for f in allFarmers:
+        allFarmerList.append({'userId': f.id,'Name':f.name,'Email':f.email,'Contact':f.phoneNo,'Address_line1':f.address,'Address_city':f.city,'Address_state':f.state,'Address_zipcode':f.zipcode,'MajorSeller': f.majorCropType,'Ratings': f.getRating})
+
+    #print(allFarmerList)
+    context = {'allFarmers': [], "signUpStatus": signUpStatus}
+
+    print("home-user")
+    return render(request, 'home-user.html', context)
+
+def blockchainPaperTrail(request):
+
+    context = {"paperTrail":getPaperTrail()}
+    return render(request, 'paperTrail.html', context)

@@ -3,8 +3,11 @@ from . import views
 
 urlpatterns = [
     path('', views.portal, name="portal"),
+    path('paperTrail', views.blockchainPaperTrail, name="paperTrail"),
     path('userSignUpPage/', views.userSignUpPage, name="userSignUpPage"),
+    path('farmerSignUpPage/', views.farmerSignUpPage, name="farmerSignUpPage"),
     path('signUp/', views.signUp, name="signUp"),
+    path('logout/', views.logout, name="logout"),
     
     ### User Pages
     path('farmerPage/', views.farmerPage, name="farmerPage"),

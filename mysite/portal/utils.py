@@ -11,7 +11,7 @@ print(f"connection : {w3.isConnected()}")
 
 abiJsonFile = open('./static/abi.json','r')
 contract_abi = abiJsonFile.read()
-contract_address = w3.toChecksumAddress("0xd54bD505E7B3C156995CF6e9e300e01E18De77C5")
+contract_address = w3.toChecksumAddress("0x2D7337ed0BC0B9aE1574A3061D453Dc00BBf56A6")
 
 contract = w3.eth.contract(address = contract_address, abi = contract_abi)
 
@@ -45,3 +45,27 @@ def saveInBlockchain(jsonString):
     pprint.pprint(status)
 
     return "status"
+
+
+def getPaperTrail():
+
+
+
+
+    numOfDeals = contract.functions.numberOfDeals().call()
+    print(f"\nNo. of registered users : {numOfDeals}")
+
+    paperTrail = []
+    
+    for i in range(numOfDeals):
+        dealData = json.loads(contract.functions.dealsMadeList(i).call())
+        
+        for deal in dealData:
+            paperTrail.append(deal)
+
+
+        
+        
+    print(paperTrail)
+
+    return paperTrail

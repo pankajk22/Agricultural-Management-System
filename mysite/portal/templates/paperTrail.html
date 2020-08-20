@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+
+<h2>Paper Trail Published on Blockchain:</h2>
+
+<table>
+  <tr>
+    <th>Timestamp</th>
+    <th>Deal ID</th>
+    <th>Crop ID</th>
+    <th>Crop Name</th>
+    <th>Crop Type</th>
+    <th>Farmer</th>
+    <th>Buyer</th>
+    <th>Quantity</th>
+    <th>Price Per Unit</th>
+  </tr>
+  {% for tuple in paperTrail %}
+  <tr>
+    <td>{{tuple.date}}:{{tuple.time}}</td>
+    <td>{{tuple.dealId}}</td>
+    <td>{{tuple.cropId}}</td>
+    <td>{{tuple.cropName}}</td>
+    <td>{{tuple.cropType}}</td>
+    <td>{{tuple.farmerName}}</td>
+    <td>{{tuple.buyerName}}</td>
+    <td>{{tuple.quantity}}</td>
+    <td>{{tuple.price}}</td>
+  </tr>
+  {% endfor %}
+  
+</table>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

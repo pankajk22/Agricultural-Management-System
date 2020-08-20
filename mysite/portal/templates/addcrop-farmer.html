@@ -1,3 +1,5 @@
+{% load static %}
+{% load socialaccount %}
 <!doctype html>
 <html lang="en">
     <style>
@@ -28,7 +30,7 @@
         
       <!-- Navigation Bar for Farmer -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">   
-        <a class="navbar-brand" href="#">AGROMARKET</a>
+        <a class="navbar-brand" href="{% url 'portal' %}">AGROMARKET</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -36,7 +38,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="home-farmer.html">Home</a>
+                    <a class="nav-link" href="{% url 'portal' %}">Home</a>
                 </li>
                 
                 <li class="nav-item">
@@ -54,7 +56,12 @@
                         <a class="dropdown-item" href="farmerprofile.html">Profile</a>
                         <!-- <a class="dropdown-item" href="#">Vegetables</a> -->
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        {% if user.is_authenticated %}
+                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                        {% else %}
+                            <a class="dropdown-item" href="{% provider_login_url 'google' method='js_sdk' %}">Login</a>
+                        {% endif %}
+                    </div>
                     </div>
                     </li>
             </ul>
@@ -64,7 +71,7 @@
 
 <nav aria-label="breadcrumb">
 <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="home-farmer.html">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'portal' %}">Home</a></li>
     <!-- <li class="breadcrumb-item"><a href="#">Library</a></li> -->
     <li class="breadcrumb-item active" aria-current="page">Add Crop</li>
 </ol>
@@ -158,7 +165,7 @@
             crop['Quantity']=quantity;
             crop['Price_per_unit']=priceperunit;
             crop['Crop_Description']=c_description;
-        
+            crop['action']="add";
 
             var url = '/addCrop/'
                         
@@ -178,7 +185,7 @@
             
             .then((data) => {
                 console.log('successfull', data);
-                alert('Crop Uploaded Successfully');
+                alert(data);
 
                 window.location.href = "{% url 'portal' %}"
                 //  window.location.reload
